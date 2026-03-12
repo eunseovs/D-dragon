@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import {
   StyleSheet,
   View,
@@ -6,64 +6,133 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from "react-native";
+
+const { width } = Dimensions.get("window");
 
 export default function GameScreen() {
   return (
-    <ImageBackground
-      source={require("../../background.jpg")}
-      style={styles.container}
-    >
-      {/* 중앙 띠용이 */}
-      <View style={styles.characterContainer}>
-        <Image
-          source={require("../../greenLv1.png")}
-          style={styles.ddiyong}
-          resizeMode="contain"
-        />
-      </View>
+    <View style={styles.container}>
+      {/* 1. 배경화면 경로 확인 */}
+      <ImageBackground
+        source={require("../img/background.jpg")}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        {/* 2. 중앙 캐릭터 (greenLv1.png 확인완료) */}
+        <View style={styles.characterContainer}>
+          <Image
+            source={require("../img/greenLv1.png")}
+            style={styles.ddiyong}
+            resizeMode="contain"
+          />
+        </View>
 
-      {/* 하단 메뉴 버튼 */}
-      <View style={styles.bottomMenu}>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity onPress={() => Alert.alert("정보")}>
-            <Image source={require("../../info.png")} style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("꾸미기")}>
-            <Image source={require("../../closet.png")} style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("업적")}>
-            <Image
-              source={require("../../achievements.png")}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
+        {/* 3. 하단 메뉴 버튼 (파일명 100% 일치시킴) */}
+        <View style={styles.bottomMenu}>
+          <View style={styles.buttonRow}>
+            {/* 정보보기 (info.png) */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => Alert.alert("정보보기")}
+            >
+              <Image source={require("../img/info.png")} style={styles.icon} />
+            </TouchableOpacity>
+
+            {/* 꾸미기 (closet.png) */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => Alert.alert("꾸미기")}
+            >
+              <Image
+                source={require("../img/closet.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+
+            {/* 업적 (achievements.png) */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => Alert.alert("업적")}
+            >
+              <Image
+                source={require("../img/achievements.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.buttonRow}>
+            {/* 오늘의 운세 (fortune.png) */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => Alert.alert("오늘의 운세")}
+            >
+              <Image
+                source={require("../img/fortune.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+
+            {/* 화장실 가기 (toilet.png) */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => Alert.alert("화장실 가기")}
+            >
+              <Image
+                source={require("../img/toilet.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+
+            {/* 산책 가기 (walk.png) */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => Alert.alert("산책 가기")}
+            >
+              <Image source={require("../img/walk.png")} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity onPress={() => Alert.alert("운세")}>
-            <Image source={require("../../fortune.png")} style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("화장실")}>
-            <Image source={require("../../toilet.png")} style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("산책")}>
-            <Image source={require("../../walk.png")} style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ImageBackground>
+      </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center" },
-  characterContainer: { position: "absolute", top: "55%" },
-  ddiyong: { width: 180, height: 180 },
-  bottomMenu: { position: "absolute", bottom: 40, width: "100%" },
+  container: { flex: 1 },
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  characterContainer: {
+    position: "absolute",
+    top: "55%",
+    alignItems: "center",
+  },
+  ddiyong: {
+    width: 180,
+    height: 180,
+  },
+  bottomMenu: {
+    position: "absolute",
+    bottom: 30,
+    width: "100%",
+    paddingHorizontal: 10,
+  },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    marginBottom: 5,
   },
-  icon: { width: 90, height: 90, resizeMode: "contain" },
+  button: { alignItems: "center", justifyContent: "center" },
+  icon: {
+    width: width * 0.28,
+    height: width * 0.28,
+    resizeMode: "contain",
+  },
 });
