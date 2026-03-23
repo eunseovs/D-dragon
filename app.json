@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "MyApp",
+    "slug": "MyApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "android": {
+      "permissions": [
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
+  }
+}
