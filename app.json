@@ -1,19 +1,18 @@
 {
   "expo": {
-    "name": "MyTodoApp",
-    "slug": "my-todo-app",
+    "name": "MyApp",
+    "slug": "MyApp",
     "version": "1.0.0",
-    "scheme": "my-todo-app",
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+    "orientation": "portrait",
+    "android": {
+      "permissions": [
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
+        "READ_EXTERNAL_STORAGE"
+      ]
     },
     "plugins": [
-      "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+      "expo-sqlite"
+    ]
   }
 }
