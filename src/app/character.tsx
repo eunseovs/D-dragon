@@ -32,7 +32,7 @@ export default function CharacterScreen() {
               <View style={[styles.levelFill, { width: `${exp}%` }]} />
             </View>
             <Image
-              source={require("../img/blueLvGauge.png")}
+              source={require("../img/greenLvGauge.png")}
               style={styles.levelFrame}
               resizeMode="contain"
             />

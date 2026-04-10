@@ -32,7 +32,7 @@ export default function WalkScreen() {
               <View style={[styles.levelFill, { width: `${exp}%` }]} />
             </View>
             <Image
-              source={require("../img/blueLvGauge.png")}
+              source={require("../img/greenLvGauge.png")}
               style={styles.levelFrame}
               resizeMode="contain"
             />
@@ -49,7 +49,7 @@ export default function WalkScreen() {
         {/* 산책 캐릭터 영역 */}
         <View style={styles.characterArea}>
           <View style={styles.bubble}>
-            <Text style={styles.bubbleText}>킁킁.. 풀냄새 좋다! 🌿</Text>
+            <Text style={styles.bubbleText}>킁킁.. 풀냄새가 좋네용!</Text>
           </View>
           <Image
             source={require("../img/greenLv1.png")}

@@ -5,12 +5,12 @@ export default function SubScreen() {
   const router = useRouter();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>준비 중인 화면입니다! 🐲</Text>
+      <Text style={styles.title}>개발예정입니다용..</Text>
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => router.replace("/character")} // 무조건 캐릭터 방으로!
       >
-        <Text style={styles.backText}>🏠 방으로 돌아가기</Text>
+        <Text style={styles.backText}>방으로 돌아가기</Text>
       </TouchableOpacity>
     </View>
   );
