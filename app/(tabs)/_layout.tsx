@@ -41,11 +41,11 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
-        name="character"
+        name="social"
         options={{
-          title: "내캐릭터",
+          title: "일기작성",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Ionicons name="create-outline" size={size} color={color} />
           )
         }}
       />
@@ -61,23 +61,18 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
-        name="social"
+        name="mypage"
         options={{
-          title: "소셜",
+          title: "더보기",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Ionicons name="ellipsis-horizontal" size={size} color={color} />
           )
         }}
       />
 
       <Tabs.Screen
-        name="mypage"
-        options={{
-          title: "마이페이지",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
-          )
-        }}
+        name="character"
+        options={{ href: null }}
       />
 
     </Tabs>

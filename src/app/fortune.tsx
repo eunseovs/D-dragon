@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+﻿import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { dailyFortunes, luckyColors, luckyItems } from "./fortunes";
+import { dailyFortunes, luckyColors, luckyItems } from "../utils/fortunes";
 
 const { width, height } = Dimensions.get("window");
 

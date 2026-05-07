@@ -1,0 +1,47 @@
+﻿import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+
+export default function SignupScreen() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignup = async () => {
+    await AsyncStorage.setItem("auth_user", JSON.stringify({ email, phone }));
+    router.replace("/");
+  };
+
+  return (
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <View style={styles.inner}>
+        <Text style={styles.title}>회원가입</Text>
+        <TextInput style={styles.input} placeholder="이메일 입력" placeholderTextColor="#C0C0C0" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder="전화번호 입력" placeholderTextColor="#C0C0C0" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+        <TextInput style={styles.input} placeholder="비밀번호 입력" placeholderTextColor="#C0C0C0" value={password} onChangeText={setPassword} secureTextEntry />
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>Sign-Up</Text>
+        </TouchableOpacity>
+        <Text style={styles.orText}>- OR -</Text>
+        <Text style={styles.loginPrompt}>
+          Already have an account?{" "}
+          <Text style={styles.loginLink} onPress={() => router.push("/login")}>Login</Text>
+        </Text>
+      </View>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fff" },
+  inner: { flex: 1, justifyContent: "center", paddingHorizontal: 36 },
+  title: { fontSize: 22, fontWeight: "600", textAlign: "center", color: "#222", marginBottom: 48 },
+  input: { backgroundColor: "#F2F2F2", borderRadius: 30, paddingVertical: 17, paddingHorizontal: 24, fontSize: 15, color: "#333", marginBottom: 14 },
+  button: { backgroundColor: "#A8D5BA", borderRadius: 30, paddingVertical: 18, alignItems: "center", marginTop: 10, marginBottom: 28 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  orText: { textAlign: "center", color: "#BBBBBB", fontSize: 13, marginBottom: 16 },
+  loginPrompt: { textAlign: "center", color: "#AAAAAA", fontSize: 13 },
+  loginLink: { color: "#AAAAAA", textDecorationLine: "underline" },
+});

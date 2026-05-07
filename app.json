@@ -1,19 +1,59 @@
 {
   "expo": {
     "name": "MyApp",
-    "slug": "MyApp",
+    "slug": "myapp",
     "version": "1.0.0",
+    "scheme": "myapp",
     "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "일기에 첨부할 사진을 선택하기 위해 사진 라이브러리에 접근합니다.",
+        "NSLocationWhenInUseUsageDescription": "사진의 GPS 정보 및 날씨 조회를 위해 위치 정보를 사용합니다."
+      }
+    },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
       "permissions": [
         "READ_MEDIA_IMAGES",
         "READ_MEDIA_VIDEO",
-        "READ_EXTERNAL_STORAGE"
+        "READ_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
       ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-sqlite",
-      "expo-font"
-    ]
+      "expo-font",
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "일기에 첨부할 사진을 선택하기 위해 사진 라이브러리에 접근합니다."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "사진의 GPS 정보 및 날씨 조회를 위해 위치 정보를 사용합니다."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }

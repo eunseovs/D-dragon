@@ -3,12 +3,8 @@ import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabaseSync("diary.db");
 
 export const initDB = () => {
-  // 🔥 기존 테이블 삭제 (핵심)
-  db.execSync(`DROP TABLE IF EXISTS diary;`);
-
-  // 🔥 새로 생성
   db.execSync(`
-    CREATE TABLE diary (
+    CREATE TABLE IF NOT EXISTS diary (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT,
       content TEXT,

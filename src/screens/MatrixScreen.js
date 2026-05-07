@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   StyleSheet, Modal, TextInput, Dimensions,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -332,7 +333,8 @@ export default function MatrixScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
 
         {viewMode === 'list' ? renderListView() : renderMatrixView()}
 
@@ -362,8 +364,10 @@ export default function MatrixScreen() {
         </View>
 
       </ScrollView>
+      </KeyboardAvoidingView>
 
       <Modal visible={modalVisible} transparent animationType="slide">
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
             <Text style={styles.modalTitle}>할 일 추가</Text>
@@ -398,6 +402,7 @@ export default function MatrixScreen() {
             </View>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
 
     </SafeAreaView>

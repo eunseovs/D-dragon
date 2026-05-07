@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+﻿import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   levelFill: { height: "100%", backgroundColor: "#58CCFF" },
   characterArea: { flex: 1, justifyContent: "center", alignItems: "center" },
-  ddiyong: { width: 220, height: 220, resizeMode: "contain" },
+  ddiyong: { width: 220, height: 220 },
   bubble: {
     backgroundColor: "white",
     padding: 15,
@@ -197,5 +197,5 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: { alignItems: "center", width: width * 0.3 },
-  icon: { width: width * 0.22, height: width * 0.22, resizeMode: "contain" },
+  icon: { width: width * 0.22, height: width * 0.22 },
 });
