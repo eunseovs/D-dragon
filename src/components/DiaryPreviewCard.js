@@ -103,6 +103,15 @@ export default function DiaryPreviewCard({ diary, navigation }) {
         </Text>
       )}
 
+      {!!diary.analysis && (
+        <View style={styles.analysisBox}>
+          <Ionicons name="sparkles" size={13} color="#1D9E75" />
+          <Text style={styles.analysisText} numberOfLines={3} ellipsizeMode="tail">
+            {diary.analysis}
+          </Text>
+        </View>
+      )}
+
       {/* 사진 썸네일 */}
       {diary.photos?.length > 0 && (
         <ScrollView
@@ -162,6 +171,17 @@ const styles = StyleSheet.create({
   tagText:  { fontSize: 12, fontWeight: '600', color: '#085041' },
 
   textPreview: { fontSize: 14, color: '#444', lineHeight: 20, paddingHorizontal: 14, marginBottom: 10 },
+
+  analysisBox: {
+    flexDirection: 'row',
+    gap: 6,
+    backgroundColor: '#F6FBF8',
+    borderRadius: 10,
+    marginHorizontal: 14,
+    marginBottom: 10,
+    padding: 10,
+  },
+  analysisText: { flex: 1, fontSize: 12, color: '#4B6258', lineHeight: 18 },
 
   photosScroll: { paddingHorizontal: 14, marginBottom: 10 },
   thumb:        { width: 60, height: 60, borderRadius: 8, backgroundColor: '#EEE' },

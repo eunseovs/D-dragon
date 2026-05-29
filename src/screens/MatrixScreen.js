@@ -4,6 +4,7 @@ import {
   StyleSheet, Modal, TextInput, Dimensions,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTodos } from '../contexts/TodoContext';
@@ -25,6 +26,8 @@ const QUADRANTS = [
   { key: 'DROP',     label: 'DROP',     color: '#FDECC8', textColor: '#D4913A',
     subtitle: '긴급하지 않음 - 중요하지 않음' },
 ];
+
+const QUADRANT_LOOKUP = Object.fromEntries(QUADRANTS.map(item => [item.key, item]));
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -69,6 +72,9 @@ export default function MatrixScreen() {
   /* ── helpers ── */
   const toggleTodo = (id) =>
     setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+
+  const deleteTodo = (id) =>
+    setTodos(prev => prev.filter(t => t.id !== id));
 
   const handleInlineAdd = () => {
     if (inlineText.trim()) {
@@ -207,18 +213,35 @@ export default function MatrixScreen() {
 
         <View style={styles.todoList}>
           {filtered.map(todo => (
-            <TouchableOpacity
+            <Swipeable
               key={todo.id}
-              style={styles.todoItem}
-              onPress={() => toggleTodo(todo.id)}
+              friction={2.2}
+              overshootRight={false}
+              rightThreshold={40}
+              renderRightActions={() => (
+                <TouchableOpacity
+                  style={styles.deleteAction}
+                  onPress={() => deleteTodo(todo.id)}
+                >
+                  <Ionicons name="trash-outline" size={18} color="#FFF" />
+                  <Text style={styles.deleteActionText}>삭제</Text>
+                </TouchableOpacity>
+              )}
             >
-              <View style={[styles.checkbox, todo.completed && styles.checkboxDone]}>
-                {todo.completed && <Ionicons name="checkmark" size={13} color="#fff" />}
-              </View>
-              <Text style={[styles.todoText, todo.completed && styles.todoTextDone]}>
-                {todo.text}
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.todoItem}
+                onPress={() => toggleTodo(todo.id)}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.checkbox, todo.completed && styles.checkboxDone]}>
+                  {todo.completed && <Ionicons name="checkmark" size={13} color="#fff" />}
+                </View>
+                <Text style={[styles.todoText, todo.completed && styles.todoTextDone]}>
+                  {todo.text}
+                </Text>
+                <Ionicons name="chevron-back" size={16} color="#C7CDC9" />
+              </TouchableOpacity>
+            </Swipeable>
           ))}
 
           <View style={styles.todoItem}>
@@ -251,15 +274,53 @@ export default function MatrixScreen() {
   const renderMatrixTasks = (key) => {
     const items = todos.filter(t => t.quadrant === key && isSameDay(t.date, selectedDate));
     return items.map(todo => (
-      <TouchableOpacity key={todo.id} style={styles.matrixTodoItem} onPress={() => toggleTodo(todo.id)}>
-        <View style={[styles.matrixCheckbox, todo.completed && styles.checkboxDone]}>
-          {todo.completed && <Ionicons name="checkmark" size={9} color="#fff" />}
-        </View>
-        <Text style={[styles.matrixTodoText, todo.completed && styles.todoTextDone]} numberOfLines={2}>
-          {todo.text}
-        </Text>
-      </TouchableOpacity>
+      <Swipeable
+        key={todo.id}
+        friction={2.2}
+        overshootRight={false}
+        rightThreshold={32}
+        renderRightActions={() => (
+          <TouchableOpacity
+            style={styles.matrixDeleteAction}
+            onPress={() => deleteTodo(todo.id)}
+          >
+            <Text style={styles.matrixDeleteActionText}>삭제</Text>
+          </TouchableOpacity>
+        )}
+      >
+        <TouchableOpacity style={styles.matrixTodoItem} onPress={() => toggleTodo(todo.id)} activeOpacity={0.8}>
+          <View style={[styles.matrixCheckbox, todo.completed && styles.checkboxDone]}>
+            {todo.completed && <Ionicons name="checkmark" size={9} color="#fff" />}
+          </View>
+          <Text style={[styles.matrixTodoText, todo.completed && styles.todoTextDone]} numberOfLines={2}>
+            {todo.text}
+          </Text>
+        </TouchableOpacity>
+      </Swipeable>
     ));
+  };
+
+  const renderMatrixCell = (key) => {
+    const quadrant = QUADRANT_LOOKUP[key];
+    const items = todos.filter(t => t.quadrant === key && isSameDay(t.date, selectedDate));
+
+    return (
+      <View key={key} style={styles.matrixCell}>
+        <View style={styles.matrixCellHeader}>
+          <Text style={[styles.matrixCellTitle, { color: quadrant.textColor }]}>{quadrant.label}</Text>
+          <TouchableOpacity style={styles.matrixAddBtn} onPress={() => openMatrixModal(key)}>
+            <Ionicons name="add" size={16} color="#55645B" />
+          </TouchableOpacity>
+        </View>
+        {items.length > 0 ? (
+          renderMatrixTasks(key)
+        ) : (
+          <TouchableOpacity style={styles.matrixEmptyState} onPress={() => openMatrixModal(key)} activeOpacity={0.8}>
+            <Text style={styles.matrixEmptyText}>할 일 추가</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
   };
 
   const renderMatrixView = () => (
@@ -285,26 +346,10 @@ export default function MatrixScreen() {
 
           <View style={styles.matrixGrid}>
             <View style={styles.matrixRow}>
-              {['DO', 'PLAN'].map(key => (
-                <TouchableOpacity
-                  key={key}
-                  style={styles.matrixCell}
-                  onPress={() => openMatrixModal(key)}
-                >
-                  {renderMatrixTasks(key)}
-                </TouchableOpacity>
-              ))}
+              {['DO', 'PLAN'].map(renderMatrixCell)}
             </View>
             <View style={styles.matrixRow}>
-              {['DELEGATE', 'DROP'].map(key => (
-                <TouchableOpacity
-                  key={key}
-                  style={styles.matrixCell}
-                  onPress={() => openMatrixModal(key)}
-                >
-                  {renderMatrixTasks(key)}
-                </TouchableOpacity>
-              ))}
+              {['DELEGATE', 'DROP'].map(renderMatrixCell)}
             </View>
           </View>
         </View>
@@ -435,8 +480,18 @@ const styles = StyleSheet.create({
 
   quadrantSubtitle: { fontSize: 15, fontWeight: '600', color: '#333', marginBottom: 14 },
 
-  todoList:    { gap: 2 },
-  todoItem:    { flexDirection: 'row', alignItems: 'center', paddingVertical: 9, gap: 12 },
+  todoList:    { gap: 8 },
+  todoItem:    {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    gap: 12,
+    borderRadius: 14,
+    backgroundColor: '#FAFAFA',
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+  },
   checkbox:    { width: 22, height: 22, borderRadius: 5, borderWidth: 1.5, borderColor: '#CCCCCC', justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
   checkboxDone:  { backgroundColor: '#4A90D9', borderColor: '#4A90D9' },
   checkboxEmpty: { borderColor: '#DDDDDD' },
@@ -444,6 +499,17 @@ const styles = StyleSheet.create({
   todoTextDone:  { textDecorationLine: 'line-through', color: '#AAAAAA', fontWeight: '400' },
   inlineInput:       { flex: 1, fontSize: 15, color: '#333', paddingVertical: 0 },
   inlinePlaceholder: { fontSize: 15, color: '#BBBBBB', fontWeight: '400' },
+  deleteAction: {
+    width: 92,
+    borderRadius: 14,
+    backgroundColor: '#DE5B52',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
+    marginLeft: 8,
+    marginVertical: 2,
+  },
+  deleteActionText: { color: '#FFF', fontSize: 12, fontWeight: '700' },
 
   matrixView:    { alignSelf: 'stretch', marginHorizontal: -MAT_H_EXTRA },
   axisHeaderRow: { flexDirection: 'row', marginBottom: 0, paddingHorizontal: MAT_H_EXTRA },
@@ -455,10 +521,58 @@ const styles = StyleSheet.create({
   axisLeftLabel: { fontSize: 16, fontWeight: '700', color: '#333', textAlign: 'center', transform: [{ rotate: '-90deg' }] },
   matrixGrid:    { flex: 1 },
   matrixRow:     { flexDirection: 'row' },
-  matrixCell:    { flex: 1, aspectRatio: 1, margin: CELL_MARGIN, borderRadius: 16, padding: 12, backgroundColor: '#EBEBEB' },
-  matrixTodoItem:{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6, gap: 6 },
+  matrixCell:    { flex: 1, aspectRatio: 1, margin: CELL_MARGIN, borderRadius: 16, padding: 10, backgroundColor: '#EBEBEB' },
+  matrixCellHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  matrixCellTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  matrixAddBtn: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFFCC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  matrixEmptyState: {
+    flex: 1,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#D8D8D8',
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
+  matrixEmptyText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#8B8B8B',
+  },
+  matrixTodoItem:{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6, gap: 6, backgroundColor: '#FFFFFFC8', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 7 },
   matrixCheckbox:{ width: 16, height: 16, borderRadius: 3, marginTop: 1, borderWidth: 1.5, borderColor: '#AAAAAA', justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
   matrixTodoText:{ fontSize: 12, color: '#333', flex: 1, lineHeight: 17 },
+  matrixDeleteAction: {
+    width: 64,
+    borderRadius: 10,
+    backgroundColor: '#DE5B52',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 6,
+    marginBottom: 6,
+    marginTop: 1,
+  },
+  matrixDeleteActionText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
 
   calendarSection: {},
   calendarHeader:  { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 6 },
