@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, TextInput,
+  StyleSheet,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTodos } from '../contexts/TodoContext';
-
-// https://aistudio.google.com/app/apikey 에서 발급받은 키를 입력하거나
-// 앱 내 입력창에서 입력하세요.
-const DEFAULT_API_KEY = '';
 
 const Q_CONFIG = [
   { key: 'DO',       label: 'DO',       barColor: '#3A9E6A' },
@@ -25,9 +22,6 @@ export default function StatsScreen() {
   const [year, setYear]       = useState(today.getFullYear());
   const [month, setMonth]     = useState(today.getMonth());
   const [aiInsight, setAiInsight] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey]   = useState(DEFAULT_API_KEY);
-  const [editingKey, setEditingKey] = useState(!DEFAULT_API_KEY);
 
   const filterMonth = (y, m) =>
     todos.filter(t => {
@@ -59,40 +53,22 @@ export default function StatsScreen() {
     if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1);
   };
 
-  const callGemini = async () => {
-    const key = apiKey.trim();
-    if (!key) { setEditingKey(true); return; }
-
-    setIsLoading(true);
-    setAiInsight('');
-
-    const prompt =
-      `다음은 사용자의 ${year}년 ${month + 1}월 아이젠하워 매트릭스 앱 통계입니다:\n` +
-      `총 할일 ${totalCount}개 중 ${completedCount}개 완료 (완료율 ${completionRate}%, 전월 대비 ${diff >= 0 ? '+' : ''}${diff}개)\n` +
-      `카테고리별: DO ${qStats[0].rate}%, PLAN ${qStats[1].rate}%, DELEGATE ${qStats[2].rate}%, DROP ${qStats[3].rate}%\n\n` +
-      `이 통계를 바탕으로 잘한 점과 개선할 점을 포함해 격려적인 인사이트를 한국어로 3~4문장으로 작성해주세요.`;
-
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 300 },
-          }),
-        }
-      );
-      if (!res.ok) throw new Error(`${res.status}`);
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      setAiInsight(text ?? '분석 결과를 받아오지 못했습니다.');
-    } catch {
-      setAiInsight('오류가 발생했습니다. API 키와 네트워크 연결을 확인해주세요.');
-    } finally {
-      setIsLoading(false);
+  const buildInsight = () => {
+    if (totalCount === 0) {
+      setAiInsight('이번 달에는 아직 등록된 일정이 없어요. 먼저 할 일을 추가하면 카테고리별 집중도와 완료 흐름을 바로 볼 수 있습니다.');
+      return;
     }
+
+    const best = [...qStats].sort((a, b) => b.rate - a.rate)[0];
+    const weakest = [...qStats].sort((a, b) => a.rate - b.rate)[0];
+    const trendText = diff >= 0 ? `전월보다 ${diff}개 더 완료했어요.` : `전월보다 ${Math.abs(diff)}개 적게 완료했어요.`;
+    const completionText = completionRate >= 70
+      ? '전체적으로 일정 처리 리듬이 꽤 안정적입니다.'
+      : '중요한 일정부터 우선순위를 다시 세우면 흐름이 더 좋아질 수 있어요.';
+
+    setAiInsight(
+      `${trendText} ${completionText} ${best.label} 영역은 완료율 ${best.rate}%로 가장 잘 관리되고 있고, ${weakest.label} 영역은 ${weakest.rate}%라 다음 달에 보완 여지가 있어요.`
+    );
   };
 
   return (
@@ -108,40 +84,13 @@ export default function StatsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
-
-        {editingKey && (
-          <View style={styles.keyCard}>
-            <Text style={styles.keyCardTitle}>Gemini API 키 설정</Text>
-            <Text style={styles.keyCardHint}>aistudio.google.com/app/apikey 에서 발급</Text>
-            <View style={styles.keyRow}>
-              <TextInput
-                style={styles.keyInput}
-                placeholder="API 키를 입력하세요"
-                placeholderTextColor="#BBB"
-                value={apiKey}
-                onChangeText={setApiKey}
-                autoCapitalize="none"
-                secureTextEntry
-              />
-              <TouchableOpacity
-                style={[styles.keySaveBtn, !apiKey.trim() && styles.keySaveBtnDisabled]}
-                onPress={() => { if (apiKey.trim()) setEditingKey(false); }}
-              >
-                <Text style={styles.keySaveText}>저장</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
 
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>월간 통계</Text>
-          <TouchableOpacity
-            style={[styles.geminiBtn, isLoading && { opacity: 0.6 }]}
-            onPress={callGemini}
-            disabled={isLoading}
-          >
-            <Text style={styles.geminiBtnText}>✦ Gemini AI</Text>
+          <TouchableOpacity style={styles.geminiBtn} onPress={buildInsight}>
+            <Text style={styles.geminiBtnText}>요약 갱신</Text>
           </TouchableOpacity>
         </View>
 
@@ -181,33 +130,23 @@ export default function StatsScreen() {
           ))}
         </View>
 
-        <Text style={styles.sectionTitle2}>AI 일정 분석</Text>
+        <Text style={styles.sectionTitle2}>AI 요약</Text>
         <View style={styles.insightCard}>
           <View style={styles.insightTitleRow}>
             <Ionicons name="sparkles" size={15} color="#3A9E6A" />
-            <Text style={styles.insightTitle}>Gemini 인사이트</Text>
+            <Text style={styles.insightTitle}>AI 일정 인사이트</Text>
           </View>
-          {isLoading ? (
-            <View style={styles.loadingRow}>
-              <ActivityIndicator color="#3A9E6A" size="small" />
-              <Text style={styles.loadingText}>분석 중...</Text>
-            </View>
-          ) : aiInsight ? (
+          {aiInsight ? (
             <Text style={styles.insightText}>{aiInsight}</Text>
           ) : (
             <Text style={styles.insightPlaceholder}>
-              위의 'Gemini AI' 버튼을 눌러{'\n'}이번 달 일정을 분석해보세요.
+              위의 '요약 갱신' 버튼을 눌러{'\n'}이번 달 일정 흐름을 정리해보세요.
             </Text>
           )}
         </View>
 
-        {!editingKey && (
-          <TouchableOpacity onPress={() => setEditingKey(true)} style={styles.changeKeyBtn}>
-            <Text style={styles.changeKeyText}>API 키 변경</Text>
-          </TouchableOpacity>
-        )}
-
       </ScrollView>
+      </KeyboardAvoidingView>
 
     </SafeAreaView>
   );
@@ -226,18 +165,6 @@ const styles = StyleSheet.create({
   headerTitle: { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '700', color: '#222' },
 
   scroll: { paddingHorizontal: 18, paddingTop: 20, paddingBottom: 32 },
-
-  keyCard: {
-    backgroundColor: '#FFF', borderRadius: 14, padding: 16, marginBottom: 20,
-    shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2,
-  },
-  keyCardTitle: { fontSize: 15, fontWeight: '700', color: '#222', marginBottom: 4 },
-  keyCardHint:  { fontSize: 12, color: '#AAA', marginBottom: 12 },
-  keyRow:       { flexDirection: 'row', gap: 8 },
-  keyInput:     { flex: 1, height: 44, backgroundColor: '#F2F2F2', borderRadius: 10, paddingHorizontal: 14, fontSize: 14, color: '#333' },
-  keySaveBtn:         { height: 44, paddingHorizontal: 18, backgroundColor: '#3A9E6A', borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  keySaveBtnDisabled: { opacity: 0.4 },
-  keySaveText:        { color: '#FFF', fontWeight: '700', fontSize: 14 },
 
   sectionRow:   { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
   sectionTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: '#222' },
@@ -282,9 +209,4 @@ const styles = StyleSheet.create({
   insightTitle:    { fontSize: 15, fontWeight: '700', color: '#222' },
   insightText:     { fontSize: 14, color: '#444', lineHeight: 22 },
   insightPlaceholder: { fontSize: 14, color: '#AAA', lineHeight: 22, textAlign: 'center', paddingVertical: 12 },
-  loadingRow:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
-  loadingText: { fontSize: 14, color: '#888' },
-
-  changeKeyBtn: { alignItems: 'center', paddingVertical: 8 },
-  changeKeyText:{ fontSize: 13, color: '#AAAAAA' },
 });

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import {
+  Text, TextInput, TouchableOpacity,
+  StyleSheet, KeyboardAvoidingView, ScrollView, Platform, View,
+} from 'react-native';
 
 export default function SignupScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail]       = useState('');
+  const [phone, setPhone]       = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignup = () => {
@@ -11,58 +14,68 @@ export default function SignupScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>회원가입</Text>
+    <KeyboardAvoidingView
+      style={styles.kav}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
+        <Text style={styles.title}>회원가입</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="이메일 입력"
-        placeholderTextColor="#BBBBBB"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="전화번호 입력"
-        placeholderTextColor="#BBBBBB"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="비밀번호 입력"
-        placeholderTextColor="#BBBBBB"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="이메일 입력"
+          placeholderTextColor="#BBBBBB"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="전화번호 입력"
+          placeholderTextColor="#BBBBBB"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="비밀번호 입력"
+          placeholderTextColor="#BBBBBB"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
-        <Text style={styles.buttonText}>Sign-Up</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.orText}>- OR -</Text>
-
-      <View style={styles.loginRow}>
-        <Text style={styles.loginHint}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.loginLink}>Login</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>Sign-Up</Text>
         </TouchableOpacity>
-      </View>
-    </View>
+
+        <Text style={styles.orText}>- OR -</Text>
+
+        <View style={styles.loginRow}>
+          <Text style={styles.loginHint}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.loginLink}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  kav: { flex: 1, backgroundColor: '#FFFFFF' },
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     paddingHorizontal: 32,
+    paddingVertical: 40,
   },
   title: {
     fontSize: 26,
