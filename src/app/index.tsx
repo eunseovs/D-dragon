@@ -8,9 +8,14 @@ export default function Index() {
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    AsyncStorage.getItem("auth_user").then((val) => {
-      setStatus(val ? "loggedIn" : "guest");
-    });
+    AsyncStorage.getItem("auth_user")
+      .then((val) => {
+        setStatus(val ? "loggedIn" : "guest");
+      })
+      .catch((error) => {
+        console.warn("Failed to read auth state:", error);
+        setStatus("guest");
+      });
   }, []);
 
   if (status === "loading") return <View style={{ flex: 1, backgroundColor: "#fff" }} />;

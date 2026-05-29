@@ -1,12 +1,29 @@
-import { createContext, useContext, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const DiaryContext = createContext(null);
 
-// diary entry 구조:
-// { id, date: 'YYYY-MM-DD', emotion, keywords, text, photos: [{ uri, gps, locationName, color }] }
-
 export function DiaryProvider({ children }) {
   const [diaries, setDiaries] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem('diaries')
+      .then(saved => {
+        if (saved) setDiaries(JSON.parse(saved));
+      })
+      .catch(error => {
+        console.warn('Failed to load diaries:', error);
+      })
+      .finally(() => setLoaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    AsyncStorage.setItem('diaries', JSON.stringify(diaries)).catch(error => {
+      console.warn('Failed to save diaries:', error);
+    });
+  }, [diaries, loaded]);
 
   const addOrUpdateDiary = (entry) => {
     setDiaries(prev => {
@@ -24,7 +41,7 @@ export function DiaryProvider({ children }) {
     diaries.find(d => d.date === dateStr) ?? null;
 
   return (
-    <DiaryContext.Provider value={{ diaries, addOrUpdateDiary, getDiaryByDate }}>
+    <DiaryContext.Provider value={{ diaries, addOrUpdateDiary, getDiaryByDate, loaded }}>
       {children}
     </DiaryContext.Provider>
   );
