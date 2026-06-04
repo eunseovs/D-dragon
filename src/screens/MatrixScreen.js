@@ -647,7 +647,15 @@ const handleSelectDate = (d) => {
         </ScrollView>
           {showDiary && (
             <View style={styles.diaryPreviewSection}>
-              <View style={styles.diaryPreviewHeader}>
+
+  <TouchableOpacity
+    style={styles.dragHandleContainer}
+    onPress={() => setShowDiary(false)}
+  >
+    <View style={styles.dragHandle} />
+  </TouchableOpacity>
+
+  <View style={styles.diaryPreviewHeader}>
                 <Text style={styles.diaryPreviewTitle}>
                   {formatDate(selectedDate)} 일기
                 </Text>
@@ -1075,4 +1083,16 @@ diaryPreviewSection: {
     alignItems: "center",
   },
   confirmText: { fontSize: 16, color: "#FFF", fontWeight: "700" },
+
+  dragHandleContainer: {
+  alignItems: "center",
+  paddingBottom: 12,
+},
+
+dragHandle: {
+  width: 50,
+  height: 5,
+  borderRadius: 999,
+  backgroundColor: "#D9D9D9",
+},
 });
