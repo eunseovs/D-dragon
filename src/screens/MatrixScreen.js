@@ -1,12 +1,16 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity,
+  View, Text, ScrollView, TouchableOpacity, Image,
   StyleSheet, Modal, TextInput, Dimensions,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import DiaryPreviewCard from '../components/DiaryPreviewCard';
+import { useDiaries } from '../contexts/DiaryContext';
+import { useSelectedDate } from '../contexts/SelectedDateContext';
 import { useTodos } from '../contexts/TodoContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -43,6 +47,14 @@ const formatDate = (date) => {
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
 };
 
+const dateToKey = (date) => {
+  const d = new Date(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+};
+
 const ColoredGridIcon = () => (
   <View style={{ width: 20, height: 20, flexDirection: 'row', flexWrap: 'wrap', gap: 2 }}>
     {['#C5E8D5', '#F9D0D0', '#C5D8F0', '#FDECC8'].map((c, i) => (
@@ -54,13 +66,15 @@ const ColoredGridIcon = () => (
 export default function MatrixScreen() {
   const today = new Date();
   const inlineRef = useRef(null);
+  const router = useRouter();
   const { todos, setTodos } = useTodos();
+  const { diaries } = useDiaries();
+  const { selectedDate, setSelectedDate } = useSelectedDate();
 
   const [viewMode, setViewMode]                 = useState('list');
-  const [year, setYear]                         = useState(today.getFullYear());
-  const [month, setMonth]                       = useState(today.getMonth());
+  const [year, setYear]                         = useState(selectedDate.getFullYear());
+  const [month, setMonth]                       = useState(selectedDate.getMonth());
   const [calendarOpen, setCalendarOpen]         = useState(true);
-  const [selectedDate, setSelectedDate]         = useState(today);
   const [selectedQuadrant, setSelectedQuadrant] = useState('DO');
   const [inlineText, setInlineText]             = useState('');
   const [isInlineEditing, setIsInlineEditing]   = useState(false);
@@ -68,6 +82,11 @@ export default function MatrixScreen() {
   const [modalVisible, setModalVisible]   = useState(false);
   const [modalQuadrant, setModalQuadrant] = useState('DO');
   const [modalText, setModalText]         = useState('');
+
+  useEffect(() => {
+    setYear(selectedDate.getFullYear());
+    setMonth(selectedDate.getMonth());
+  }, [selectedDate]);
 
   /* ── helpers ── */
   const toggleTodo = (id) =>
@@ -125,6 +144,12 @@ export default function MatrixScreen() {
       .filter(t => { const d = new Date(t.date); return d.getFullYear() === year && d.getMonth() === month; })
       .map(t => new Date(t.date).getDate())
   );
+  const diaryPhotosByDate = new Map(
+    diaries
+      .filter(diary => diary.date?.startsWith(`${year}-${String(month + 1).padStart(2, '0')}-`) && diary.photos?.length > 0)
+      .map(diary => [diary.date, diary.photos[0]])
+  );
+  const selectedDiary = diaries.find(diary => diary.date === dateToKey(selectedDate)) ?? null;
 
   const prevMonth = () => {
     if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1);
@@ -172,7 +197,14 @@ export default function MatrixScreen() {
                     {d}
                   </Text>
                 </View>
-                <View style={[styles.taskDot, datesWithTasks.has(d) && styles.taskDotActive]} />
+                {diaryPhotosByDate.has(dateToKey(new Date(year, month, d))) ? (
+                  <Image
+                    source={{ uri: diaryPhotosByDate.get(dateToKey(new Date(year, month, d))).uri }}
+                    style={styles.calendarPhotoThumb}
+                  />
+                ) : (
+                  <View style={[styles.taskDot, datesWithTasks.has(d) && styles.taskDotActive]} />
+                )}
               </>
             )}
           </TouchableOpacity>
@@ -408,6 +440,19 @@ export default function MatrixScreen() {
           )}
         </View>
 
+        <View style={styles.diaryPreviewSection}>
+          <View style={styles.diaryPreviewHeader}>
+            <Text style={styles.diaryPreviewTitle}>{formatDate(selectedDate)} 일기</Text>
+            <TouchableOpacity onPress={() => router.push('/social')}>
+              <Text style={styles.diaryPreviewLink}>일기 쓰기</Text>
+            </TouchableOpacity>
+          </View>
+          <DiaryPreviewCard
+            diary={selectedDiary}
+            onPress={() => router.push('/social')}
+          />
+        </View>
+
       </ScrollView>
       </KeyboardAvoidingView>
 
@@ -589,8 +634,24 @@ const styles = StyleSheet.create({
   dayText:        { fontSize: 15, color: '#333' },
   todayText:      { color: '#fff', fontWeight: '700' },
   selectedText:   { color: '#fff', fontWeight: '700' },
+  calendarPhotoThumb: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    marginTop: 4,
+    backgroundColor: '#E0E0E0',
+  },
   taskDot:        { width: 20, height: 5, borderRadius: 3, backgroundColor: '#E0E0E0', marginTop: 3 },
   taskDotActive:  { backgroundColor: '#A8D5BF' },
+
+  diaryPreviewSection: { marginTop: 18, gap: 10 },
+  diaryPreviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  diaryPreviewTitle: { fontSize: 16, fontWeight: '700', color: '#222' },
+  diaryPreviewLink: { fontSize: 13, fontWeight: '700', color: '#3A9E6A' },
 
   modalOverlay:    { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
   modalBox:        { backgroundColor: '#FFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 },

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const DiaryContext = createContext(null);
 
@@ -25,7 +25,7 @@ export function DiaryProvider({ children }) {
     });
   }, [diaries, loaded]);
 
-  const addOrUpdateDiary = (entry) => {
+  const addOrUpdateDiary = useCallback((entry) => {
     setDiaries(prev => {
       const idx = prev.findIndex(d => d.date === entry.date);
       if (idx >= 0) {
@@ -35,13 +35,21 @@ export function DiaryProvider({ children }) {
       }
       return [...prev, entry];
     });
-  };
+  }, []);
 
-  const getDiaryByDate = (dateStr) =>
-    diaries.find(d => d.date === dateStr) ?? null;
+  const getDiaryByDate = useCallback((dateStr) =>
+    diaries.find(d => d.date === dateStr) ?? null
+  , [diaries]);
+
+  const value = useMemo(() => ({
+    diaries,
+    addOrUpdateDiary,
+    getDiaryByDate,
+    loaded,
+  }), [diaries, addOrUpdateDiary, getDiaryByDate, loaded]);
 
   return (
-    <DiaryContext.Provider value={{ diaries, addOrUpdateDiary, getDiaryByDate, loaded }}>
+    <DiaryContext.Provider value={value}>
       {children}
     </DiaryContext.Provider>
   );
