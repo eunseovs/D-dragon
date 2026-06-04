@@ -116,7 +116,7 @@ export default function MatrixScreen() {
   const { todos, setTodos } = useTodos();
   const { diaries } = useDiaries();
   const { selectedDate, setSelectedDate } = useSelectedDate();
-
+const [showDiary, setShowDiary] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const [year, setYear] = useState(selectedDate.getFullYear());
   const [month, setMonth] = useState(selectedDate.getMonth());
@@ -194,11 +194,25 @@ export default function MatrixScreen() {
     setModalVisible(false);
   };
 
-  const handleSelectDate = (d) => {
-    setSelectedDate(new Date(year, month, d));
-    setIsInlineEditing(false);
-    setInlineText("");
-  };
+
+const handleSelectDate = (d) => {
+  const clickedDate = new Date(year, month, d);
+
+  if (
+    selectedDate.getFullYear() === clickedDate.getFullYear() &&
+    selectedDate.getMonth() === clickedDate.getMonth() &&
+    selectedDate.getDate() === clickedDate.getDate()
+  ) {
+    setShowDiary((prev) => !prev);
+    return;
+  }
+
+  setSelectedDate(clickedDate);
+  setShowDiary(true);
+
+  setIsInlineEditing(false);
+  setInlineText("");
+};
 
   const datesWithTasks = new Set(
     todos
@@ -609,20 +623,8 @@ export default function MatrixScreen() {
               </>
             )}
           </View>
-          {calendarOpen && (
-            <>
-              <View style={styles.weekRow}>
-                {WEEKDAYS.map((d) => (
-                  <Text key={d} style={styles.weekDay}>
-                    {d}
-                  </Text>
-                ))}
-              </View>
-              {renderCalendarGrid()}
-            </>
-          )}
         </ScrollView>
-
+{showDiary && (
         <View style={styles.diaryPreviewSection}>
           <View style={styles.diaryPreviewHeader}>
             <Text style={styles.diaryPreviewTitle}>
@@ -637,6 +639,7 @@ export default function MatrixScreen() {
             onPress={() => router.push("/social")}
           />
         </View>
+)}
       </KeyboardAvoidingView>
 
       <Modal visible={modalVisible} transparent animationType="slide">
