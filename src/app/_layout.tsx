@@ -9,6 +9,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DiaryProvider } from "../contexts/DiaryContext";
 import { SelectedDateProvider } from "../contexts/SelectedDateContext";
 import { TodoProvider } from "../contexts/TodoContext";
+import { CharacterProvider } from "../contexts/CharacterContext";
+
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -29,6 +31,7 @@ export default function AppLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+    <CharacterProvider>
       <SelectedDateProvider>
         <DiaryProvider>
           <TodoProvider>
@@ -98,6 +101,7 @@ export default function AppLayout() {
           </TodoProvider>
         </DiaryProvider>
       </SelectedDateProvider>
+    </CharacterProvider>
     </GestureHandlerRootView>
   );
 }

@@ -1,6 +1,7 @@
 ﻿  import { useRouter, useLocalSearchParams } from "expo-router";
   import React, { useState } from "react";
   import { Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native";
+  import { useCharacter } from "../contexts/CharacterContext";
 
   const { width } = Dimensions.get("window");
 
@@ -11,10 +12,13 @@
     const router = useRouter();
     const [hunger] = useState(80);
     const [clean] = useState(60);
-const [level, setLevel] = useState(1);
-const [exp, setExp] = useState(0);
-const [coin, setCoin] = useState(0);
-
+    const {
+  level,
+  exp,
+  coin,
+  addExp,
+  addCoin,
+} = useCharacter();
 
     let characterImage;
 
@@ -106,18 +110,9 @@ characterImage = require("../img/greenLv3.png");
 <TouchableOpacity
   style={styles.debugButton}
   onPress={() => {
-    const gainedExp = 20;
-    const maxExp = level * 20;
-
-    if (exp + gainedExp >= maxExp) {
-      setLevel(level + 1);
-      setExp(exp + gainedExp - maxExp);
-    } else {
-      setExp(exp + gainedExp);
-    }
-
-    setCoin(coin + 20);
-  }}
+  addExp(20);
+  addCoin(20);
+}}
 >
     <Text style={styles.debugButtonText}>
       +20 XP

@@ -20,6 +20,8 @@ import DiaryPreviewCard from "../components/DiaryPreviewCard";
 import { useDiaries } from "../contexts/DiaryContext";
 import { useSelectedDate } from "../contexts/SelectedDateContext";
 import { useTodos } from "../contexts/TodoContext";
+import { useCharacter } from "../contexts/CharacterContext";
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const AXIS_WIDTH = 22;
@@ -114,6 +116,7 @@ export default function MatrixScreen() {
   const inlineRef = useRef(null);
   const router = useRouter();
   const { todos, setTodos } = useTodos();
+  const { addExp, addCoin } = useCharacter();
   const { diaries } = useDiaries();
   const { selectedDate, setSelectedDate } = useSelectedDate();
 const [showDiary, setShowDiary] = useState(false);
@@ -135,17 +138,24 @@ const [showDiary, setShowDiary] = useState(false);
   }, [selectedDate]);
 
   /* ── helpers ── */
-  const toggleTodo = (id) =>
-    setTodos((prev) => {
-      const updated = prev.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed } : t,
-      );
+const toggleTodo = (id) =>
+  setTodos((prev) => {
+    const target = prev.find((t) => t.id === id);
 
-      return [...updated].sort((a, b) => {
-        if (a.completed === b.completed) return 0;
-        return a.completed ? 1 : -1;
-      });
+    if (target && !target.completed) {
+      addExp(5);
+      addCoin(5);
+    }
+
+    const updated = prev.map((t) =>
+      t.id === id ? { ...t, completed: !t.completed } : t,
+    );
+
+    return [...updated].sort((a, b) => {
+      if (a.completed === b.completed) return 0;
+      return a.completed ? 1 : -1;
     });
+  });
 
   const deleteTodo = (id) =>
     setTodos((prev) => prev.filter((t) => t.id !== id));
