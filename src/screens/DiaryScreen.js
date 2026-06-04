@@ -18,6 +18,7 @@ import {
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDiaries } from "../contexts/DiaryContext";
+import { useCharacter } from "../contexts/CharacterContext";
 import { useSelectedDate } from "../contexts/SelectedDateContext";
 
 const EMOTIONS = ["😊", "😎", "😌", "😤", "😡"];
@@ -156,6 +157,7 @@ const buildTimeline = (items) =>
 export default function DiaryScreen() {
   const { selectedDate, shiftSelectedDate, goToToday } = useSelectedDate();
   const { addOrUpdateDiary, getDiaryByDate } = useDiaries();
+  const { addExp, addCoin } = useCharacter();
   const mapRef = useRef(null);
 
   const [photos, setPhotos] = useState([]);
@@ -329,7 +331,14 @@ export default function DiaryScreen() {
       })),
     };
     addOrUpdateDiary(entry);
-    Alert.alert("저장 완료", `${selectedDateKey} 일기가 저장되었습니다. 🎉`);
+
+addExp(10);
+addCoin(10);
+
+Alert.alert(
+  "저장 완료",
+  `${selectedDateKey} 일기가 저장되었습니다.\n\n XP +10\n 코인 +10`
+);
   };
 
   const locationNames = [
