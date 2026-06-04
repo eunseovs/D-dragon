@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -19,20 +19,33 @@ export default function SignupScreen() {
   const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
+    console.log("1. 클릭됨");
+
     await AsyncStorage.setItem("auth_user", JSON.stringify({ email, phone }));
-    router.replace("/");
+
+    console.log("2. 저장완료");
+
+    router.replace("/index");
+
+    console.log("3. 이동명령 실행");
   };
 
   return (
-    <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <View style={styles.hero}>
         <View style={styles.heroBadge}>
           <Ionicons name="sparkles-outline" size={14} color="#2F7D57" />
           <Text style={styles.heroBadgeText}>Start Your Day</Text>
         </View>
-        <Text style={styles.heroTitle}>사진과 일정이 한 흐름으로 이어지는 시작점</Text>
+        <Text style={styles.heroTitle}>
+          사진과 일정이 한 흐름으로 이어지는 시작점
+        </Text>
         <Text style={styles.heroSubtitle}>
-          회원가입을 마치면 홈, 일기, 이동 기록이 같은 톤으로 자연스럽게 이어집니다.
+          회원가입을 마치면 홈, 일기, 이동 기록이 같은 톤으로 자연스럽게
+          이어집니다.
         </Text>
         <View style={styles.previewStrip}>
           <View style={[styles.previewPill, { backgroundColor: "#E6F2EB" }]}>
@@ -49,7 +62,9 @@ export default function SignupScreen() {
 
       <View style={styles.formCard}>
         <Text style={styles.formTitle}>회원가입</Text>
-        <Text style={styles.formSubtitle}>테스트 단계라 간단히 이메일 기반으로 시작합니다.</Text>
+        <Text style={styles.formSubtitle}>
+          테스트 단계라 간단히 이메일 기반으로 시작합니다.
+        </Text>
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>이메일</Text>
@@ -92,8 +107,13 @@ export default function SignupScreen() {
           <Text style={styles.primaryButtonText}>회원가입 완료</Text>
         </Pressable>
 
-        <Pressable style={styles.secondaryButton} onPress={() => router.push("/login")}>
-          <Text style={styles.secondaryButtonText}>이미 계정이 있으면 로그인</Text>
+        <Pressable
+          style={styles.secondaryButton}
+          onPress={() => router.push("/login")}
+        >
+          <Text style={styles.secondaryButtonText}>
+            이미 계정이 있으면 로그인
+          </Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
