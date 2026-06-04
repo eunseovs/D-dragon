@@ -4,7 +4,7 @@ import { Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity,
 
 const { width } = Dimensions.get("window");
 
-const SHOW_GAME_ELEMENTS = false;
+const SHOW_GAME_ELEMENTS = true;
 
 export default function CharacterScreen() {
   const router = useRouter();
