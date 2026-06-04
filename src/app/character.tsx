@@ -1,101 +1,264 @@
-﻿import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+﻿  import { useRouter } from "expo-router";
+  import React, { useState } from "react";
+  import { Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native";
 
-const { width } = Dimensions.get("window");
+  const { width } = Dimensions.get("window");
 
-const SHOW_GAME_ELEMENTS = true;
+  const SHOW_GAME_ELEMENTS = true;
 
-export default function CharacterScreen() {
-  const router = useRouter();
-  const [hunger] = useState(80);
-  const [clean] = useState(60);
-  const [exp] = useState(40);
+  export default function CharacterScreen() {
+    const router = useRouter();
+    const [hunger] = useState(80);
+    const [clean] = useState(60);
+    const [exp] = useState(40);
 
-  return (
-    <View style={styles.container}>
-      <ImageBackground source={require("../img/room_background.png")} style={styles.background} resizeMode="cover">
-        {SHOW_GAME_ELEMENTS && (
-          <View style={styles.topHeader}>
-            <View style={styles.levelWrapper}>
-              <View style={styles.levelGaugeContainer}>
-                <View style={[styles.levelFill, { width: `${exp}%` }]} />
-              </View>
-              <Image source={require("../img/greenLvGauge.png")} style={styles.levelFrame} resizeMode="contain" />
+    return (
+      <View style={styles.container}>
+        <ImageBackground source={require("../img/room_background.png")} style={styles.background} resizeMode="cover">
+
+          {SHOW_GAME_ELEMENTS && (
+            <View style={styles.topHeader}>
+            <View style={styles.levelCard}>
+  <Text style={styles.levelText}>Lv. 3</Text>
+
+  <View style={styles.levelBarBackground}>
+    <View
+      style={[
+        styles.levelBarFill,
+        { width: `${exp}%` }
+      ]}
+    />
+  </View>
+
+<Text style={styles.levelPercent}>
+  40 / 100 XP
+</Text>
+</View>
+<View style={styles.coinCard}>
+  <Text style={styles.coinText}>
+    1,329 C
+  </Text>
+</View>
             </View>
-            <ImageBackground source={require("../img/coin.png")} style={styles.coinBg} resizeMode="contain">
-              <Text style={styles.coinText}>1,329 C</Text>
-            </ImageBackground>
-          </View>
-        )}
+          )}
 
-        <View style={styles.characterArea}>
-          <Image source={require("../img/greenLv1.png")} style={styles.ddiyong} resizeMode="contain" />
+          <View style={styles.characterArea}>
+            <Image source={require("../img/greenLv1.png")} style={styles.ddiyong} resizeMode="contain" />
+          </View>
+{SHOW_GAME_ELEMENTS && (
+  <View style={styles.statusSection}>
+    <View style={styles.statusCard}>
+
+      <View style={styles.statusRow}>
+        <Text style={styles.statusLabel}>🍪 포만감</Text>
+
+        <View style={styles.barBackground}>
+          <View
+            style={[
+              styles.barFill,
+              { width: `${hunger}%` }
+            ]}
+          />
         </View>
 
-        {SHOW_GAME_ELEMENTS && (
-          <View style={styles.statusSection}>
-            <View style={styles.stateWrapper}>
-              <View style={styles.stateColorLayer}>
-                <View style={[styles.hungerFill, { width: `${hunger * 0.32}%` }]} />
-                <View style={[styles.cleanFill, { width: `${clean * 0.32}%` }]} />
-              </View>
-              <Image source={require("../img/greenStateGauge.png")} style={styles.stateFrame} resizeMode="contain" />
-            </View>
-          </View>
-        )}
+        <Text style={styles.percentText}>
+          {hunger}%
+        </Text>
+      </View>
 
-        {SHOW_GAME_ELEMENTS && (
-          <View style={styles.bottomMenu}>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/info")}>
-                <Image source={require("../img/info_button.png")} style={styles.icon} resizeMode="contain" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/closet")}>
-                <Image source={require("../img/closet_button.png")} style={styles.icon} resizeMode="contain" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/achievements")}>
-                <Image source={require("../img/achievements_button.png")} style={styles.icon} resizeMode="contain" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/fortune")}>
-                <Image source={require("../img/fortune_button.png")} style={styles.icon} resizeMode="contain" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/walk")}>
-                <Image source={require("../img/walk_button.png")} style={styles.icon} resizeMode="contain" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/toilet")}>
-                <Image source={require("../img/toilet_button.png")} style={styles.icon} resizeMode="contain" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </ImageBackground>
+      <View style={styles.statusRow}>
+        <Text style={styles.statusLabel}>🫧 청결도</Text>
+
+        <View style={styles.barBackground}>
+          <View
+            style={[
+              styles.barFill,
+              { width: `${clean}%` }
+            ]}
+          />
+        </View>
+
+        <Text style={styles.percentText}>
+          {clean}%
+        </Text>
+      </View>
+
     </View>
-  );
-}
+  </View>
+)}
+
+          {SHOW_GAME_ELEMENTS && (
+            <View style={styles.bottomMenu}>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/info")}>
+                  <Image source={require("../img/info_button.png")} style={styles.icon} resizeMode="contain" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/closet")}>
+                  <Image source={require("../img/closet_button.png")} style={styles.icon} resizeMode="contain" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/achievements")}>
+                  <Image source={require("../img/achievements_button.png")} style={styles.icon} resizeMode="contain" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/fortune")}>
+                  <Image source={require("../img/fortune_button.png")} style={styles.icon} resizeMode="contain" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/walk")}>
+                  <Image source={require("../img/walk_button.png")} style={styles.icon} resizeMode="contain" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/toilet")}>
+                  <Image source={require("../img/toilet_button.png")} style={styles.icon} resizeMode="contain" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </ImageBackground>
+      </View>
+      
+    );
+  }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  background: { flex: 1 },
-  topHeader: { flexDirection: "row", justifyContent: "space-between", marginTop: 50, paddingHorizontal: 15 },
-  coinBg: { width: 140, height: 50, justifyContent: "center", alignItems: "flex-end", paddingRight: 25 },
-  coinText: { color: "#555", fontWeight: "bold", fontSize: 16 },
-  levelWrapper: { width: 150, height: 60, justifyContent: "center" },
-  levelFrame: { width: "100%", height: "100%", zIndex: 2 },
-  levelGaugeContainer: { position: "absolute", left: 45, top: 26, width: 78, height: 10, backgroundColor: "#eee", zIndex: 1 },
-  levelFill: { height: "100%", backgroundColor: "#58CCFF" },
-  characterArea: { flex: 1, justifyContent: "center", alignItems: "center" },
-  ddiyong: { width: 220, height: 220 },
-  statusSection: { alignItems: "center", marginBottom: 20 },
-  stateWrapper: { width: width * 0.9, height: 100 },
-  stateFrame: { width: "100%", height: "100%", zIndex: 2 },
-  stateColorLayer: { position: "absolute", zIndex: 1, top: "43%", flexDirection: "row", width: "100%", paddingLeft: "26%" },
-  hungerFill: { height: 14, backgroundColor: "#76BA1B", borderRadius: 5 },
-  cleanFill: { height: 14, backgroundColor: "#FF9800", borderRadius: 5, marginLeft: "18%" },
-  bottomMenu: { paddingBottom: 40 },
-  buttonRow: { flexDirection: "row", justifyContent: "space-around", marginBottom: 15 },
-  button: { alignItems: "center", width: width * 0.3 },
-  icon: { width: width * 0.22, height: width * 0.22 },
+  container: {
+    flex: 1,
+  },
+
+  background: {
+    flex: 1,
+  },
+
+topHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  marginTop: 65,
+  paddingHorizontal: 15,
+},
+
+  characterArea: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 120,
+  },
+
+  ddiyong: {
+    width: 220,
+    height: 220,
+  },
+
+statusSection: {
+  alignItems: "center",
+  marginBottom: 30,
+},
+
+statusCard: {
+  width: width * 0.85,
+  alignSelf: "center",
+  backgroundColor: "rgba(255,255,255,0.75)",
+  borderRadius: 24,
+  paddingVertical: 6,
+  paddingHorizontal: 16,
+},
+  statusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 4,
+  },
+
+  statusLabel: {
+    width: 70,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#555",
+  },
+
+  barBackground: {
+    flex: 1,
+    height: 10,
+  backgroundColor: "rgba(239, 219, 230, 0.6)",
+    borderRadius: 999,
+    overflow: "hidden",
+    marginHorizontal: 10,
+  },
+
+  barFill: {
+    height: "100%",
+    backgroundColor: "#C8E6D5",
+    borderRadius: 999,
+  },
+
+  percentText: {
+    width: 40,
+    textAlign: "right",
+    fontSize: 13,
+    color: "#666",
+  },
+
+  bottomMenu: {
+    marginBottom: 3,
+  },
+
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 10,
+  },
+
+  button: {
+    alignItems: "center",
+    width: width * 0.3,
+  },
+
+  icon: {
+    width: width * 0.22,
+    height: width * 0.22,
+  },
+  levelCard: {
+  width: 150,
+},
+
+levelText: {
+  fontSize: 18,
+  fontWeight: "700",
+  color: "#555",
+  marginBottom: 6,
+},
+
+levelBarBackground: {
+  height: 12,
+  backgroundColor: "rgba(239, 219, 230, 0.6)",
+  borderRadius: 999,
+  overflow: "hidden",
+},
+
+levelBarFill: {
+  height: "100%",
+  backgroundColor: "#C8E6D5",
+  borderRadius: 999,
+},
+
+levelPercent: {
+  marginTop: 4,
+  fontSize: 12,
+  color: "#777",
+  textAlign: "right",
+},
+
+coinCard: {
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: "#ffdd6e",
+  paddingHorizontal: 16,
+  paddingVertical: 5,
+  borderRadius: 16,
+},
+
+coinText: {
+  fontSize: 15,
+  fontWeight: "700",
+  color: "#777",
+},
+
 });

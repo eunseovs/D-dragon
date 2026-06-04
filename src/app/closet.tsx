@@ -82,7 +82,7 @@ const Closet = () => {
 
   return (
     <ImageBackground
-      source={require("../img/closet_background.jpg")}
+      source={require("../img/closet_background.png")}
       style={styles.container}
     >
       <View style={styles.closetGrid}>
