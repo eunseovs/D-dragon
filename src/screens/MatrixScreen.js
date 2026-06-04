@@ -624,22 +624,24 @@ const handleSelectDate = (d) => {
             )}
           </View>
         </ScrollView>
-{showDiary && (
-        <View style={styles.diaryPreviewSection}>
-          <View style={styles.diaryPreviewHeader}>
-            <Text style={styles.diaryPreviewTitle}>
-              {formatDate(selectedDate)} 일기
-            </Text>
-            <TouchableOpacity onPress={() => router.push("/social")}>
-              <Text style={styles.diaryPreviewLink}>일기 쓰기</Text>
-            </TouchableOpacity>
-          </View>
-          <DiaryPreviewCard
-            diary={selectedDiary}
-            onPress={() => router.push("/social")}
-          />
-        </View>
-)}
+          {showDiary && (
+            <View style={styles.diaryPreviewSection}>
+              <View style={styles.diaryPreviewHeader}>
+                <Text style={styles.diaryPreviewTitle}>
+                  {formatDate(selectedDate)} 일기
+                </Text>
+
+                <TouchableOpacity onPress={() => router.push("/social")}>
+                  <Text style={styles.diaryPreviewLink}>일기 쓰기</Text>
+                </TouchableOpacity>
+              </View>
+
+              <DiaryPreviewCard
+                diary={selectedDiary}
+                onPress={() => router.push("/social")}
+              />
+            </View>
+          )}
       </KeyboardAvoidingView>
 
       <Modal visible={modalVisible} transparent animationType="slide">
@@ -966,7 +968,28 @@ const styles = StyleSheet.create({
   },
   taskDotActive: { backgroundColor: "#A8D5BF" },
 
-  diaryPreviewSection: { marginTop: 18, gap: 10 },
+diaryPreviewSection: {
+  marginTop: 12,
+
+  backgroundColor: "#FFFFFF",
+
+  borderTopLeftRadius: 24,
+  borderTopRightRadius: 24,
+
+  paddingTop: 16,
+  paddingHorizontal: 18,
+  paddingBottom: 20,
+
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: -4,
+  },
+  shadowOpacity: 0.08,
+  shadowRadius: 12,
+
+  elevation: 8,
+},
   diaryPreviewHeader: {
     flexDirection: "row",
     alignItems: "center",
