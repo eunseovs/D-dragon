@@ -11,7 +11,7 @@
     const { egg } = useLocalSearchParams();
     const router = useRouter();
     const [hunger] = useState(80);
-    const [clean] = useState(60);
+    const { clean } = useCharacter();
     const {
   level,
   exp,

@@ -6,6 +6,7 @@ export function CharacterProvider({ children }) {
   const [level, setLevel] = useState(1);
   const [exp, setExp] = useState(0);
   const [coin, setCoin] = useState(0);
+  const [clean, setClean] = useState(100);
 
   const addExp = (amount) => {
     let newExp = exp + amount;
@@ -33,15 +34,17 @@ export function CharacterProvider({ children }) {
   return (
     <CharacterContext.Provider
       value={{
-        level,
-        exp,
-        coin,
-        setLevel,
-        setExp,
-        setCoin,
-        addExp,
-        addCoin,
-      }}
+  level,
+  exp,
+  coin,
+  setCoin,
+
+  clean,
+  setClean,
+
+  addExp,
+  addCoin,
+}}
     >
       {children}
     </CharacterContext.Provider>
