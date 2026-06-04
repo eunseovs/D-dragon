@@ -140,16 +140,25 @@ const [showDiary, setShowDiary] = useState(false);
   /* ── helpers ── */
 const toggleTodo = (id) =>
   setTodos((prev) => {
-    const target = prev.find((t) => t.id === id);
+    const updated = prev.map((t) => {
+      if (t.id !== id) return t;
 
-    if (target && !target.completed) {
-      addExp(5);
-      addCoin(5);
-    }
+      if (!t.completed && !t.rewarded) {
+        addExp(5);
+        addCoin(5);
 
-    const updated = prev.map((t) =>
-      t.id === id ? { ...t, completed: !t.completed } : t,
-    );
+        return {
+          ...t,
+          completed: true,
+          rewarded: true,
+        };
+      }
+
+      return {
+        ...t,
+        completed: !t.completed,
+      };
+    });
 
     return [...updated].sort((a, b) => {
       if (a.completed === b.completed) return 0;
@@ -169,6 +178,7 @@ const toggleTodo = (id) =>
           text: inlineText.trim(),
           quadrant: selectedQuadrant,
           completed: false,
+          rewarded: false,
           date: selectedDate,
         },
       ]);
@@ -197,6 +207,7 @@ const toggleTodo = (id) =>
         text: modalText.trim(),
         quadrant: modalQuadrant,
         completed: false,
+        rewarded: false,
         date: selectedDate,
       },
     ]);
