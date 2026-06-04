@@ -1,4 +1,4 @@
-﻿  import { useRouter } from "expo-router";
+﻿  import { useRouter, useLocalSearchParams } from "expo-router";
   import React, { useState } from "react";
   import { Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native";
 
@@ -7,10 +7,68 @@
   const SHOW_GAME_ELEMENTS = true;
 
   export default function CharacterScreen() {
+    const { egg } = useLocalSearchParams();
     const router = useRouter();
     const [hunger] = useState(80);
     const [clean] = useState(60);
-    const [exp] = useState(40);
+const [level, setLevel] = useState(1);
+const [exp, setExp] = useState(0);
+const [coin, setCoin] = useState(0);
+
+
+    let characterImage;
+
+if (egg === "0") {
+// 빨강
+
+if (level === 1) {
+characterImage = require("../img/redEgg.png");
+} else if (level === 2) {
+characterImage = require("../img/redEggLv2.png");
+} else if (level === 3) {
+characterImage = require("../img/redEggLv3.png");
+} else if (level < 15) {
+characterImage = require("../img/redLv1.png");
+} else if (level < 30) {
+characterImage = require("../img/redLv2.png");
+} else {
+characterImage = require("../img/redLv3.png");
+}
+
+} else if (egg === "1") {
+// 파랑
+
+if (level === 1) {
+characterImage = require("../img/blueEgg.png");
+} else if (level === 2) {
+characterImage = require("../img/blueEggLv2.png");
+} else if (level === 3) {
+characterImage = require("../img/blueEggLv3.png");
+} else if (level < 15) {
+characterImage = require("../img/blueLv1.png");
+} else if (level < 30) {
+characterImage = require("../img/blueLv2.png");
+} else {
+characterImage = require("../img/blueLv3.png");
+}
+
+} else {
+// 초록
+
+if (level === 1) {
+characterImage = require("../img/greenEgg.png");
+} else if (level === 2) {
+characterImage = require("../img/greenEggLv2.png");
+} else if (level === 3) {
+characterImage = require("../img/greenEggLv3.png");
+} else if (level < 15) {
+characterImage = require("../img/greenLv1.png");
+} else if (level < 30) {
+characterImage = require("../img/greenLv2.png");
+} else {
+characterImage = require("../img/greenLv3.png");
+}
+}
 
     return (
       <View style={styles.container}>
@@ -19,31 +77,63 @@
           {SHOW_GAME_ELEMENTS && (
             <View style={styles.topHeader}>
             <View style={styles.levelCard}>
-  <Text style={styles.levelText}>Lv. 3</Text>
+            <Text style={styles.levelText}>
+  Lv. {level}
+</Text>
 
   <View style={styles.levelBarBackground}>
     <View
       style={[
         styles.levelBarFill,
-        { width: `${exp}%` }
+        { width: `${(exp / (level * 20)) * 100}%` }
       ]}
     />
   </View>
 
 <Text style={styles.levelPercent}>
-  40 / 100 XP
+  {exp} / {level * 20} XP
 </Text>
 </View>
-<View style={styles.coinCard}>
-  <Text style={styles.coinText}>
-    1,329 C
-  </Text>
+
+<View style={styles.rightPanel}>
+
+  <View style={styles.coinCard}>
+    <Text style={styles.coinText}>
+      C {coin}
+    </Text>
+  </View>
+
+<TouchableOpacity
+  style={styles.debugButton}
+  onPress={() => {
+    const gainedExp = 20;
+    const maxExp = level * 20;
+
+    if (exp + gainedExp >= maxExp) {
+      setLevel(level + 1);
+      setExp(exp + gainedExp - maxExp);
+    } else {
+      setExp(exp + gainedExp);
+    }
+
+    setCoin(coin + 20);
+  }}
+>
+    <Text style={styles.debugButtonText}>
+      +20 XP
+    </Text>
+  </TouchableOpacity>
+
 </View>
             </View>
           )}
 
           <View style={styles.characterArea}>
-            <Image source={require("../img/greenLv1.png")} style={styles.ddiyong} resizeMode="contain" />
+<Image
+  source={characterImage}
+  style={styles.ddiyong}
+  resizeMode="contain"
+/>
           </View>
 {SHOW_GAME_ELEMENTS && (
   <View style={styles.statusSection}>
@@ -140,7 +230,7 @@ topHeader: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 120,
+    marginTop: 85,
   },
 
   ddiyong: {
@@ -247,7 +337,6 @@ levelPercent: {
 },
 
 coinCard: {
-  flexDirection: "row",
   alignItems: "center",
   backgroundColor: "#ffdd6e",
   paddingHorizontal: 16,
@@ -259,6 +348,19 @@ coinText: {
   fontSize: 15,
   fontWeight: "700",
   color: "#777",
+},
+debugButton: {
+  marginTop: 20,
+  backgroundColor: "#D9C7F7",
+  borderRadius: 12,
+  paddingVertical: 5,
+  alignItems: "center",
+},
+
+debugButtonText: {
+  color: "#555",
+  fontSize: 12,
+  fontWeight: "700",
 },
 
 });
