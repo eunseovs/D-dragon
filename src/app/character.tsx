@@ -119,17 +119,33 @@ characterImage = require("../img/greenLv3.png");
     </Text>
   </TouchableOpacity>
 
+  <TouchableOpacity
+  style={styles.debugButton}
+  onPress={() => {
+    addExp(500);
+  }}
+>
+  <Text style={styles.debugButtonText}>
+    +500 XP
+  </Text>
+</TouchableOpacity>
+
+
 </View>
             </View>
           )}
 
           <View style={styles.characterArea}>
-<Image
-  source={characterImage}
-  style={styles.ddiyong}
-  resizeMode="contain"
-/>
-          </View>
+  <Image
+    source={characterImage}
+    style={
+      level <= 3
+        ? styles.eggImage
+        : styles.characterImage
+    }
+    resizeMode="contain"
+  />
+</View>
 {SHOW_GAME_ELEMENTS && (
   <View style={styles.statusSection}>
     <View style={styles.statusCard}>
@@ -228,10 +244,16 @@ topHeader: {
     marginTop: 85,
   },
 
-  ddiyong: {
-    width: 220,
-    height: 220,
-  },
+eggImage: {
+  width: 150,
+  height: 150,
+  marginTop: 50,
+},
+
+characterImage: {
+  width: 220,
+  height: 220,
+},
 
 statusSection: {
   alignItems: "center",

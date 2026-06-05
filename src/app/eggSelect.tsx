@@ -33,20 +33,42 @@ return (
 source={require('../img/select_egg.png')}
 style={styles.background}
 resizeMode="cover"
-> <View style={styles.container}> <View style={styles.eggContainer}>
-{eggImages.map((egg, index) => (
-<TouchableOpacity
-key={index}
-onPress={() => setSelectedEgg(index)}
->
-<Image
-source={egg}
-style={[
-styles.eggImage,
-selectedEgg === index && styles.selectedEgg,
-]}
-/> </TouchableOpacity>
-))} </View>
+> <View style={styles.container}>
+  <View style={styles.eggContainer}>
+  {eggImages.map((egg, index) => (
+    <TouchableOpacity
+      key={index}
+      onPress={() => setSelectedEgg(index)}
+      style={[
+        index === 0 && {
+          position: 'absolute',
+          left: -160,
+          top: 65,
+        },
+
+        index === 1 && {
+          position: 'absolute',
+          left: 33,
+          top: 63,
+        },
+
+        index === 2 && {
+          position: 'absolute',
+          left: -63,
+          top: -10,
+        },
+      ]}
+    >
+      <Image
+        source={egg}
+        style={[
+          styles.eggImage,
+          selectedEgg === index && styles.selectedEgg,
+        ]}
+      />
+    </TouchableOpacity>
+  ))}
+</View>
 
     <TouchableOpacity
       onPress={selectEgg}
@@ -77,9 +99,7 @@ alignItems: 'center',
 },
 
 eggContainer: {
-flexDirection: 'row',
-alignItems: 'center',
-marginTop: 120,
+  position: 'absolute',
 },
 
 eggImage: {
@@ -99,6 +119,6 @@ selectButton: {
 width: 120,
 height: 60,
 resizeMode: 'contain',
-marginTop: 40,
+marginTop: 450,
 },
 });
